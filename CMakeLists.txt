@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.4.3)
 
 project("SVF")
 
+option(ENABLE_TESTING "Enable Test Builds" ON)
+
 # To support both in- and out-of-source builds,
 # we check for the presence of the add_llvm_loadable_module command.
 # - if this command is not present, we are building out-of-source
@@ -21,7 +23,7 @@ if(NOT COMMAND add_llvm_library)
 	set(CMAKE_C_FLAGS "-fPIC")
 
 	find_package(LLVM REQUIRED CONFIG)
-        
+
         list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
         include(AddLLVM)
 
@@ -41,7 +43,6 @@ set(Z3_DIR $ENV{Z3_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
                     ${CMAKE_CURRENT_BINARY_DIR}/include
                     ${Z3_DIR}/include/)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Test-Suite)
 
 LINK_DIRECTORIES(${Z3_DIR}/bin)
 add_subdirectory(lib)
@@ -54,6 +55,11 @@ INSTALL(
     FILES_MATCHING
     PATTERN "**/*.h"
     )
-enable_testing()
-add_subdirectory(Test-Suite)
-include(CTest)
+
+if (ENABLE_TESTING)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Test-Suite)
+
+    enable_testing()
+    add_subdirectory(Test-Suite)
+    include(CTest)
+endif()
