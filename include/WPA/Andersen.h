@@ -424,11 +424,13 @@ public:
     AndersenWaveDiff(PAG* _pag, PTATY type = AndersenWaveDiff_WPA, bool alias_check = true): Andersen(_pag, type, alias_check) {}
 
     /// Create an singleton instance directly instead of invoking llvm pass manager
-    static AndersenWaveDiff* createAndersenWaveDiff(PAG* _pag)
+    static AndersenWaveDiff* createAndersenWaveDiff(PAG* _pag, bool stats = true)
     {
         if(diffWave==NULL)
         {
             diffWave = new AndersenWaveDiff(_pag, AndersenWaveDiff_WPA, false);
+            if ( !stats )
+                diffWave->disablePrintStat();
             diffWave->analyze();
             return diffWave;
         }
